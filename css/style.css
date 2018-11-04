@@ -1,0 +1,421 @@
+html, body {
+    min-height: 100%;
+    height: 100%;
+    background-color: #f5f5f5;
+}
+
+.container-fluid {
+	color: white;
+    background-color: white;
+    width: 80%;
+    height: 90%;
+}
+
+#users {
+    background-color: #303030;
+	height: 100%;
+}
+
+#users-content {
+	height: calc(100% - 65px);	
+}
+
+#users-content img {
+	cursor: pointer;	
+}
+
+#users-menu {
+	height: 55px;
+}
+
+.line {
+	background-color: white;	
+	width: 100%;
+	height: 2px;
+	float: left;
+}
+
+#messages {
+    background-color: #dddddd;
+	height: 100%;
+	position: relative;
+}
+
+#content {
+	height: 100%;
+}
+
+#user {
+	display: flex;
+	justify-content: center;
+	padding-top: 10px;
+	height: 165px;
+}
+
+.user-description {	
+	font-weight: 600;
+	display: flex;
+	justify-content: center;
+	width: 100%;
+}
+
+#serachbox {
+	margin-top: 10px;	
+	height: 40px;
+}
+
+.user-buttons {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: calc(100% / 3);
+ 	float: left;
+	height: 100%;
+}
+
+.invitation-buttons {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 50px;
+ 	float: left;
+	height: 100%;
+	float: left;
+}
+
+#my-users {
+	overflow-y: auto;
+	margin-top: 10px;
+	height: calc(100% - 235px);
+}
+
+.user {
+	padding-top: 5px;
+	padding-bottom: 5px;
+	height: 75px;
+	cursor: pointer;
+}
+
+.contact {
+	padding-top: 5px;
+	padding-bottom: 5px;
+	height: 75px;
+}
+
+.user:active, .user:focus {
+	background: rgba(0,123,255,0.5);		
+}
+
+.user-avatar {
+	width: 65px;
+	float: left;
+	display: inline-block;
+	position: relative;
+}
+
+.status {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.online {
+	background-color: #92fc00;	
+}
+
+.offline {
+	background-color: red;	
+}
+
+.user-avatar img {
+	width:65px;
+    height:auto;
+}
+
+#search {
+	padding-left: 10px;
+}
+
+.user-name {
+	width: calc(100% - 65px);
+	padding-left: 5%;
+	float: left;
+	display: flex;
+	align-items: center;
+	height: 100%;
+}	
+
+.L-2 {
+	width: calc(100% - 65px - 100px);	
+}
+
+.L-1 {
+	width: calc(100% - 65px - 50px);	
+}
+
+#user-label {
+	color: #303030;
+	font-weight: 600;
+	height: 63px;
+	width: 100%;
+}
+
+#search-user {
+	margin-bottom: 10px;	
+}
+
+#message {
+	width: 100%;
+	height: calc(100% - 63px - 73px);
+	overflow-y: auto;
+}
+
+#input {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	height: 73px;
+	width: 100%;
+}
+
+#text-message {
+	margin: 5px;
+	width: calc(100% - 75px);
+	float: left;
+}
+
+#message-button {
+	width: 65px;	
+	height: 73px;
+	float: left;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#user-label-avatar {
+	width: 49px;
+	margin: 6px; 
+	float: left;
+}
+
+#user-label img {
+	width: 49px;
+    height: auto;
+}
+
+#user-label-name {
+	width: calc(100% - 65px);
+	height: 63px;
+	float: left;
+	display: flex;
+	align-items: center;	
+}
+
+#user-label-button {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-left: 10px;
+	width: 50px;
+ 	float: left;
+	height: 100%;
+	display: none;
+}
+
+#user-label-description {
+	background-color: white;
+	padding: 5px;
+	border-radius: 5px;	
+}
+
+.btn-back {
+	background-color: #303030;
+	color: white;	
+}
+
+.btn-send {
+	background-color: #303030;
+	color: white;
+}
+
+.main-message {
+	margin: 15px;	
+}
+
+.message-user-name {
+	font-weight: 600;
+	color: #303030;
+}
+
+.message-user-date {
+	color: #6F7376;
+}
+
+.message {
+	border-radius: 5px;
+	padding: 10px;
+}
+
+.sender-message {
+	background-color: #61C06F;
+}
+
+.guest-message {
+	background-color: #79C6EC;
+}
+
+.guest {
+	display: flex; 
+	justify-content: flex-end;
+}
+
+.guest .message-user-date {
+	margin-right: 5px;	
+}
+
+textarea {
+  resize: none;
+}	
+
+.border-2 {
+    border:2px solid grey;
+}
+
+.border-3 {
+    border: 3px solid white;
+}
+
+#edit-settings-label {
+	color: #303030;
+	font-weight: 600;
+	height: 63px;
+	width: 100%;
+}
+
+#edit-settings-label-button {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-left: 10px;
+	width: 50px;
+ 	float: left;
+	height: 100%;
+	display: none;
+}
+
+#edit-settings {
+	margin: 15px;
+	height: calc(100% - 93px);
+	overflow-y: auto;
+	color: #303030;
+}
+
+#edit-settings h5 {
+	padding-top: 10px;	
+}
+
+#edit-settings > div:first-of-type {
+	 margin: auto;
+}
+
+#edit-settings-label-name {
+	margin-left: 15px;
+	width: calc(100% - 85px);
+	height: 63px;
+	float: left;
+	display: flex;
+	align-items: center;	
+}	
+
+#add-user-label {
+	color: #303030;
+	font-weight: 600;
+	height: 63px;
+	width: 100%;
+}
+
+#add-user-label-button {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-left: 10px;
+	width: 50px;
+ 	float: left;
+	height: 100%;
+	display: none;
+}
+
+#add-user-label-name {
+	margin-left: 15px;
+	width: calc(100% - 85px);
+	height: 63px;
+	float: left;
+	display: flex;
+	align-items: center;	
+}
+
+#add-user {
+	margin: 15px;
+	height: calc(100% - 93px);
+	overflow-y: auto;
+	color: #303030;
+}
+
+
+#add-user > div:first-of-type {
+	 margin: auto;
+}
+
+.center-avatar {
+	text-align: center;
+}	
+
+#avatar {
+    width: 100px;
+    height: 100px;
+}
+
+@media only screen and (max-width : 767px) {
+	.container-fluid {
+		background-color: white;
+		width: 100%;
+		height: 100%;
+	}
+	
+	#users {
+		display: none;	
+	}
+	
+	#user {
+		display: none;	
+	}
+
+	#my-users {
+		height: calc(100% - 235px + 165px);
+	}
+	
+	#user-label-name {
+		width: calc(100% - 125px);
+		height: 63px;
+		float: left;
+		display: flex;
+		align-items: center;	
+	}
+	
+	#user-label-button {
+		display: flex;	
+	}
+	
+	#edit-settings-label-button {
+		display: flex;	
+	}
+	
+	#add-user-label-button {
+		display: flex;	
+	}
+}
