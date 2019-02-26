@@ -1,5 +1,9 @@
 <?php 
+    ob_start();
     if (session_status() === PHP_SESSION_NONE){session_start();}
+    require_once 'vendor/autoload.php';
+    use \Gumlet\ImageResize;
+
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -103,8 +107,6 @@
     </head>
     <body class="text-center">
           <?php
-			require_once("php-image-resize-master/lib/ImageResize.php");
-			use \Gumlet\ImageResize;
             if (isset($_POST['register'])) {
                 require_once("database_connection.php");
 				
@@ -118,13 +120,13 @@
                 $query->bindParam(':surname', $_POST['surname']);
                 if (!isset($_FILES['avatar-file']) || $_FILES['avatar-file']['error'] == UPLOAD_ERR_NO_FILE) {
                     mkdir("img/avatars/".$_POST['username']);
-				   $query->bindValue(':avatar', "img/avatars/avatar.png", PDO::PARAM_STR);
+                    $query->bindValue(':avatar', "img/avatars/avatar.png", PDO::PARAM_STR);
                 } else {
                    mkdir("img/avatars/".$_POST['username']);
                    $file =  "img/avatars/".$_POST['username']."/".$_FILES["avatar-file"]["name"];
-				   $image = new ImageResize($_FILES['avatar-file']['tmp_name']);
-				   $image->resize(100, 100);
-				   $image->save($file);
+                   $image = new ImageResize($_FILES['avatar-file']['tmp_name']);
+                   $image->resize(100, 100, $allow_enlarge = True);
+                   $image->save($file);
                    $query->bindValue(':avatar', $file, PDO::PARAM_STR);
                 }
                 $query->execute();

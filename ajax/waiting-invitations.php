@@ -2,7 +2,7 @@
 	if (session_status() === PHP_SESSION_NONE){session_start();}
 	require_once("../database_connection.php");
 	
-	$sql = "SELECT i.contact, u.name, u.surname, u.avatar  FROM invitations as i
+	$sql = "SELECT i.contact, u.name, u.surname, u.username, u.avatar  FROM invitations as i
 			INNER JOIN users as u ON u.username = i.username
 			WHERE i.contact = :username";
     $query = $conn->prepare($sql); 
@@ -15,6 +15,7 @@
 		while ($row = $query->fetch()) {
 			$data[$iterator]['name'] = $row['name'];
 			$data[$iterator]['surname'] = $row['surname'];
+      $data[$iterator]['username'] = $row['username'];
 			$data[$iterator]['avatar'] = $row['avatar'];
 			$iterator += 1;
 		}

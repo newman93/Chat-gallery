@@ -1,5 +1,83 @@
+var conn = new WebSocket('ws://localhost:8080');
+conn.onopen = function(e) {
+    console.log("Connection established!");
+    changeStatus(1);
+};
+
+conn.onmessage = function(e) {
+    var data = JSON.parse(e.data);
+	
+   switch(data.type) { 
+      case "login": 
+         handleLogin(data.state); 
+         break; 
+      //when somebody wants to call us 
+      case "offer": 
+         handleOffer(data.fromUsername); 
+         break; 
+      case "accepted":
+         handleAccepted(data.fromUsername);
+         break;
+      case "answer": 
+         handleAnswer(data.fromUsername, data.message); 
+         break; 
+      //when a remote peer sends an ice candidate to us 
+      case "leave": 
+         handleLeave(data.fromUsername); 
+         break; 
+   } 
+};
+
+function handleLogin(state) {
+ console.log(state);
+}
+
+function send(message) { 
+   conn.send(JSON.stringify(message)); 
+};
+
+function handleOffer(fromUsername) { 
+   send({type : 'accepted', toUsername: fromUsername, fromUsername: 'host'});
+};
+
+function handleAccepted(fromUsername) { 
+   console.log("accepeted: "+fromUsername);
+};
+  
+//when we got an answer from a remote user 
+function handleAnswer(fromUsername, answer) { 
+   console.log('Message: '+answer+ " from: "+fromUsername); 
+};
+  
+
+function handleLeave(username) { 
+  console.log("leave: " + username)
+};
+
+window.onbeforeunload = function() {
+    conn.onclose = function () {changeStatus(0)}; // disable onclose handler first
+    conn.close();
+};
+
+function changeStatus(st) {
+ 	$.ajax({
+			type: 'POST',
+			url: 'ajax/change-status.php',
+			data: {status : st}, 
+      datatype: "json",
+			success: function (data) { 
+      }
+  });
+}
+
 $( document ).ready(function() {
-	function loadContacts() {
+ function scrollMessages() {
+  if ($("#message").length > 0) {
+   $("#message").scrollTop($("#message")[0].scrollHeight);
+  }
+ }
+
+ function loadContacts() {
 		$.ajax({
 			type: 'POST',
 			url: 'ajax/load-contacts.php',
@@ -8,9 +86,9 @@ $( document ).ready(function() {
 				data = JSON.parse(data);
 				$("#my-users").empty();	
 				if (!('empty' in data[0])) {
-					for (var i = 0; i < data.length; ++i) {
-						$("#my-users").append('\
-							<div class="user" username='+data[i]['username']+'>\
+           for (var i = 0; i < data.length; ++i) {
+            $("#my-users").append('\
+							<div class="user '+data[i]['to_read']+'" username='+data[i]['username']+'>\
 								<div class="user-avatar">\
 									<img src="'+data[i]['avatar']+'" class="rounded-circle border-2">\
 									<div class="status '+data[i]['active']+'">\
@@ -46,7 +124,22 @@ $( document ).ready(function() {
 	
 	loadContacts();
 	checkInvitations();
-	
+	scrollMessages();
+  
+  function createMessage(author, name, surname, time, date, message) {
+    return (author == "guest" || author == "sender")? 
+                       `<div class="main-message">
+                         <div class="message-user `+author+`">
+                           <span class="message-user-name">`+name+` `+surname+`</span>
+                           <span class="message-user-date"><small>`+time+` `+date+`</small></span>
+                         </div>
+                         <div class="message `+author+`-message">
+                           <span>`+message+`</span>
+                         </div>
+                       </div>`:
+                       "";
+  };
+  
 	$(document).on("submit", "#search-contact", function (event) {
 		event.preventDefault();
 		var user = $('#search-contact input[name="user"]').val().trim();
@@ -88,10 +181,9 @@ $( document ).ready(function() {
 				}
 			});
 		}
-		
 	});
 	
-	
+	/*
 	$(window).resize(function() {
 		if ($(window).width() > 767) {
 			$("#messages").css("display", "block");
@@ -100,23 +192,23 @@ $( document ).ready(function() {
 			$("#users").css("display", "block");
 			$("#messages").css("display", "none");
 		}
-	});
+	}); */
 	
-	$(document).on("click", "#show-contacts", function () {
+	$(document).on("click touch", "#show-contacts", function () {
 		$("#search-contact input").val("");
 		loadContacts();
 	});
 	
-	$(document).on("click", "#users-content img", function () {
+	$(document).on("click touch", "#users-content img", function () {
 		window.location.href = "index.php";
 	});
 	
-	$(document).on("click", "#back-users", function () {
+	$(document).on("click touch", "#back-users", function () {
 		$("#messages").css("display", "none");
 		$("#users").css("display", "block");
 	});
 	
-	$(document).on("click", "#settings", function () {
+	$(document).on("click touch", "#settings", function () {
 		if ($("#messages").css("display") == "none") {
 			$("#users").css("display", "none");
 			$("#messages").css("display", "block");		
@@ -235,7 +327,7 @@ $( document ).ready(function() {
 	$(document).on("submit", "#logout", function (event) {
 		event.preventDefault();
 		var self = this;
-					
+				
 		$.ajax({
 			type: 'POST',
 			url: 'ajax/logout.php',
@@ -274,9 +366,10 @@ $( document ).ready(function() {
 
 	$(document).on("submit", "#change-name", function (event) {
 		event.preventDefault();
+  
 		var self = this;
 		var name = $('input[name="name"]').val();
-        var surname = $('input[name="surname"]').val();
+    var surname = $('input[name="surname"]').val();
 		var error = false;
 		var message = "";
 		
@@ -310,7 +403,7 @@ $( document ).ready(function() {
 			});
 		} else {
 			bootbox.alert(message);	
-		}
+		} 
 	});
 
 	$(document).on("submit", "#change-email", function (event) {
@@ -389,7 +482,7 @@ $( document ).ready(function() {
 		}
 	});
 	
-	$(document).on("click", "#add", function () {
+	$(document).on("click touch", "#add", function () {
 		if ($("#messages").css("display") == "none") {
 			$("#users").css("display", "none");
 			$("#messages").css("display", "block");		
@@ -477,10 +570,10 @@ $( document ).ready(function() {
 									</div>\
 								</div>\
 								<div class="invitation-buttons">\
-									<button class="btn btn-primary" type="button" class="add-contact"><i class="fas fa-user-plus" aria-hidden="true"></i></button>\
+									<button class="btn btn-primary add-contact" type="button" username="'+data[i]['username']+'"><i class="fas fa-user-plus" aria-hidden="true"></i></button>\
 								</div>\
 								<div class="invitation-buttons">\
-									<button class="btn btn-danger" type="button" class="cancel-contact"><i class="fas fa-user-minus" aria-hidden="true"></i></button>\
+									<button class="btn btn-danger cancel-contact" type="button" username="'+data[i]['username']+'"><i class="fas fa-user-minus" aria-hidden="true"></i></button>\
 								</div>\
 							</div>');
 					}
@@ -488,10 +581,67 @@ $( document ).ready(function() {
 			}
 		});
 	});
+  
+  $(document).on("click touch", ".add-contact", function() {
+   var contact = $(this).attr('username');
+   var parent = $(this).parent();
+   
+   $.ajax({
+				type: 'POST',
+				data: {
+					contact: contact,
+				},
+				url: 'ajax/add-contact.php',
+				datatype: "json",
+				success: function (data) { 
+         if (parent.prev('.ivitation-buttons').length !== 0) {
+          parent.prev('.invitation-buttons').remove();
+         } else {
+          parent.next('.invitation-buttons').remove();
+         }
+         parent.empty();
+         parent.append('<button class="btn btn-secondary added-contact" type="button"><i class="fas fa-user-check" aria-hidden="true"></i></button>');
+         if ($('.add-contact').length < 1) {
+          $("#add").removeClass("btn-primary");
+					$("#add").addClass("btn-default");
+         }
+         loadContacts();
+        }
+       });  
+  });
 	
+  $(document).on("click touch", ".cancel-contact", function() {
+   var contact = $(this).attr('username');
+   var parent = $(this).parent();
+   
+   $.ajax({
+				type: 'POST',
+				data: {
+					contact: contact,
+				},
+				url: 'ajax/cancel-contact.php',
+				datatype: "json",
+				success: function (data) { 
+         if (parent.prev('.invitation-buttons').length !== 0) {
+          console.log('lol');
+          parent.prev('.invitation-buttons').remove();
+         } else {
+          parent.next('.invitation-buttons').remove();
+         }
+         parent.empty();
+         parent.append('<button class="btn btn-secondary canceled-contact" type="button"><i class="fas fa-user-slash" aria-hidden="true"></i></button>');
+        
+         if ($('.add-contact').length < 1) {
+          $("#add").removeClass("btn-primary");
+					$("#add").addClass("btn-default");
+         }
+        }
+       });  
+  });
+  
 	$(document).on("submit", "#search-user", function (event) {
 		event.preventDefault();
-		var user = $('$search-user input[name="user"]').val().trim();
+		var user = $('#search-user input[name="user"]').val().trim();
 		var split_user = user.split(" ");
 		
 		if (split_user.length > 2 || user == "") {
@@ -518,19 +668,19 @@ $( document ).ready(function() {
 							
 							if (data[i]['contact'] != null) {
 								contact =   '<div class="invitation-buttons">\
-												<button class="btn btn-secondary" type="button" class="added-contact"><i class="fas fa-users" aria-hidden="true"></i></button>\
+												<button class="btn btn-secondary added-contact" type="button"><i class="fas fa-users" aria-hidden="true"></i></button>\
 											</div>';	
 							}
 							
 							if (data[i]['invitation'] != null) {
 								invitation = 	'<div class="invitation-buttons">\
-													<button class="btn btn-secondary" type="button" class="invited-contact"><i class="fas fa-user-check" aria-hidden="true"></i></button>\
+													<button class="btn btn-secondary invited-contact" type="button"><i class="fas fa-user-check" aria-hidden="true"></i></button>\
 												</div>';	
 							}
 							
 							if (data[i]['contact'] == null && data[i]['invitation'] == null) {
 								add = 	'<div class="invitation-buttons">\
-											<button class="btn btn-primary" type="button" class="invite"><i class="fas fa-user-plus" aria-hidden="true"></i></button>\
+											<button class="btn btn-primary invite" type="button" username="'+data[i]['username']+'"><i class="fas fa-user-plus" aria-hidden="true"></i></button>\
 										</div>';
 							}
 							
@@ -546,9 +696,116 @@ $( document ).ready(function() {
 									</div>' + contact + invitation + add +'\
 								</div>');
 						}
-					} 
+					} else {
+           $("#found-users").append("Brak wyników...");
+          } 
 				}
 			});
 		}
 	});
+  
+  $(document).on("click touch",".invite", function() {
+   var contact = $(this).attr("username");
+   var parent = $(this).parent();
+   $.ajax({
+				type: 'POST',
+				data: {
+					contact: contact,
+				},
+				url: 'ajax/send-invitation.php',
+				datatype: "json",
+				success: function (data) { 
+         parent.empty();
+         parent.append('<button class="btn btn-secondary invited-contact" type="button"><i class="fas fa-user-check" aria-hidden="true"></i></button>');
+        }
+       });     
+  });
+  
+  $(document).on("click touch", ".user", function() {
+   var username = $(this).attr('username');
+   var element = $(this);
+   $("#messages").empty();
+   $.ajax({
+				type: 'POST',
+				data: {
+					username: username,
+				},
+				url: 'ajax/load-messages.php',
+				datatype: "json",
+				success: function (data1) { 
+         var data = JSON.parse(data1);
+         var messages = `<div id="user-label">
+                         <div id="user-label-button">
+                           <button class="btn btn-back" type="button" id="back-users"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
+                         </div>
+                         <div id="user-label-avatar">
+                           <img src="`+data['user']['avatar']+`" class="rounded-circle border-2">
+                         </div>
+                         <div  id="user-label-name">
+                           <div id="user-label-description">
+                             <span>`+data['user']['name']+` `+data['user']['surname']+`</span>
+                           </div>
+                         </div>
+                         <div class="line">
+                         </div>
+                       </div>
+                       <div id="message">`;
+        if (!('empty' in data['messages'][0])) {
+         for(var value in data['messages']) {
+          var author = "";
+          if (data['messages'][value]['author'] == 1) {
+           author = "sender";
+          } else {
+           author = "guest";
+          }
+           messages += createMessage(author,data['messages'][value]['from_name'], data['messages'][value]['from_surname'], data['messages'][value]['time'], data['messages'][value]['date'], data['messages'][value]['message']);
+         }
+        }
+         messages += `</div>
+                     <div id="input">
+                      <div class="line">
+                      </div>
+                      <form action="" method="POST" id="send-message">
+                        <div id="text-message">
+                          <textarea type="text" class="form-control" name="message" placeholder="Wpisz wiadomość..."></textarea>
+                        </div>
+                        <div id="message-button">		
+                          <button class="btn btn-send" type="submit" username="`+data['user']['username']+`">
+                            <i class="fas fa-arrow-right"></i>
+                          </button>
+                        </div>
+                      </form>
+                    </div>`;
+         $("#messages").append(messages);
+         scrollMessages();
+         element.removeClass('to_read');
+         $(document).find('.active_user').removeClass('active_user');
+         element.addClass('active_user');
+        }
+       }); 
+  });
+  
+  $(document).on("submit", "#send-message", function(e) {
+   e.preventDefault();
+   var message = $("textarea[name='message']").val().trim();
+   var username = $('.btn-send').attr('username');
+   
+   if (message != "") {
+    $.ajax({
+				type: 'POST',
+				data: {
+					username: username,
+          message: message
+				},
+				url: 'ajax/send-message.php',
+				datatype: "json",
+				success: function (data1) { 
+         var data = JSON.parse(data1);
+         
+         $("#message").append(createMessage("sender", data['name'], data['surname'], data['time'], data['date'], message));
+         scrollMessages();
+        }
+   });
+  }
+ }); 
 });

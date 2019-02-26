@@ -5,7 +5,7 @@ html, body {
 }
 
 .container-fluid {
-	color: white;
+    color: white;
     background-color: white;
     width: 80%;
     height: 90%;
@@ -13,7 +13,7 @@ html, body {
 
 #users {
     background-color: #303030;
-	height: 100%;
+    height: 100%;
 }
 
 #users-content {
@@ -92,6 +92,8 @@ html, body {
 .user {
 	padding-top: 5px;
 	padding-bottom: 5px;
+  padding-left: 5px;
+  margin-top: 5px;
 	height: 75px;
 	cursor: pointer;
 }
@@ -101,10 +103,10 @@ html, body {
 	padding-bottom: 5px;
 	height: 75px;
 }
-
+/*
 .user:active, .user:focus {
 	background: rgba(0,123,255,0.5);		
-}
+}*/
 
 .user-avatar {
 	width: 65px;
@@ -261,21 +263,21 @@ html, body {
 	padding: 10px;
 }
 
-.sender-message {
+.guest-message {
 	background-color: #61C06F;
 }
 
-.guest-message {
+.sender-message {
 	background-color: #79C6EC;
 }
 
-.guest {
+.sender {
 	display: flex; 
 	justify-content: flex-end;
 }
 
-.guest .message-user-date {
-	margin-right: 5px;	
+.sender .message-user-date {
+	margin-left: 5px;	
 }
 
 textarea {
@@ -380,7 +382,16 @@ textarea {
     height: 100px;
 }
 
-@media only screen and (max-width : 767px) {
+.to_read {
+  /* border:1px solid rgba(0,123,255,0.5); */	
+  background: rgba(8,8,8, 0.5);
+}
+
+.active_user{
+  background: rgba(0,123,255,0.3);
+}
+
+@media only screen  and (max-width : 767px) {
 	.container-fluid {
 		background-color: white;
 		width: 100%;

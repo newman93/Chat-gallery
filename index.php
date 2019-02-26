@@ -1,5 +1,7 @@
 <?php 
+    ob_start();
     if (session_status() === PHP_SESSION_NONE){session_start();}
+    require_once 'vendor/autoload.php'
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -21,7 +23,7 @@
     </head>
     <body>
         <?php 
-            if (isset($_SESSION['active']) && $_SESSION['active'] == 1) {
+            if (isset($_SESSION['name'])) {
         ?>
         <div class="container-fluid">
 			<div id="content" class="row">
@@ -189,7 +191,7 @@
 				</div>
 				
 				<div id="messages" class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8 p-0 m-0">
-					<div id="user-label">
+					<!--<div id="user-label">
 						<div id="user-label-button">
 							<button class="btn btn-back" type="button" id="back-users"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
 						</div>
@@ -273,9 +275,9 @@
 								</button>
 							</div>
 						</form>
-					</div>
+					</div>-->
 				</div>
-			</div>
+			</div> 
         </div>    
         
         <?php    
