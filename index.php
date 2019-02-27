@@ -1,7 +1,10 @@
 <?php 
     ob_start();
     if (session_status() === PHP_SESSION_NONE){session_start();}
-    require_once 'vendor/autoload.php'
+    require_once 'vendor/autoload.php';
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -13,17 +16,19 @@
         <link rel="stylesheet" href="css/bootstrap-grid.min.css">
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/style.css">
-		<link rel="stylesheet" href="css/fontawesome/all.min.css">
+        <link rel="stylesheet" href="css/fontawesome/all.min.css">
         
         <script src="js/jquery-3.3.1.min.js"></script>
         <script src="js/bootstrap.bundle.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
-		<script src="js/bootbox.min.js"></script>
+        <script src="js/bootbox.min.js"></script>
+        <script src="js/client.js"></script>
         <script src="js/script.js"></script>
     </head>
     <body>
         <?php 
             if (isset($_SESSION['name'])) {
+             echo '<script>$(document).ready(function() {username = "'.$_SESSION["username"].'";})</script>';
         ?>
         <div class="container-fluid">
 			<div id="content" class="row">
@@ -191,10 +196,10 @@
 				</div>
 				
 				<div id="messages" class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8 p-0 m-0">
-					<!--<div id="user-label">
+					<!-- <div id="user-label">
 						<div id="user-label-button">
 							<button class="btn btn-back" type="button" id="back-users"><i class="fas fa-arrow-left" aria-hidden="true"></i></button>
-						</div>
+						</div>  
 						<div id="user-label-avatar">
 							<img src="img/avatars/avatar.png" class="rounded-circle border-2">
 						</div>

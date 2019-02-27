@@ -1,80 +1,20 @@
-var conn = new WebSocket('ws://localhost:8080');
-conn.onopen = function(e) {
-    console.log("Connection established!");
-    changeStatus(1);
-};
-
-conn.onmessage = function(e) {
-    var data = JSON.parse(e.data);
-	
-   switch(data.type) { 
-      case "login": 
-         handleLogin(data.state); 
-         break; 
-      //when somebody wants to call us 
-      case "offer": 
-         handleOffer(data.fromUsername); 
-         break; 
-      case "accepted":
-         handleAccepted(data.fromUsername);
-         break;
-      case "answer": 
-         handleAnswer(data.fromUsername, data.message); 
-         break; 
-      //when a remote peer sends an ice candidate to us 
-      case "leave": 
-         handleLeave(data.fromUsername); 
-         break; 
-   } 
-};
-
-function handleLogin(state) {
- console.log(state);
-}
-
-function send(message) { 
-   conn.send(JSON.stringify(message)); 
-};
-
-function handleOffer(fromUsername) { 
-   send({type : 'accepted', toUsername: fromUsername, fromUsername: 'host'});
-};
-
-function handleAccepted(fromUsername) { 
-   console.log("accepeted: "+fromUsername);
-};
-  
-//when we got an answer from a remote user 
-function handleAnswer(fromUsername, answer) { 
-   console.log('Message: '+answer+ " from: "+fromUsername); 
-};
-  
-
-function handleLeave(username) { 
-  console.log("leave: " + username)
-};
-
-window.onbeforeunload = function() {
-    conn.onclose = function () {changeStatus(0)}; // disable onclose handler first
-    conn.close();
-};
-
-function changeStatus(st) {
- 	$.ajax({
-			type: 'POST',
-			url: 'ajax/change-status.php',
-			data: {status : st}, 
-      datatype: "json",
-			success: function (data) { 
-      }
-  });
-}
-
+var createMessage;
+var selected_user;
+var username;
+var  scrollMessages;
 $( document ).ready(function() {
- function scrollMessages() {
+ selected_user = "";
+ username = "";
+ 
+ scrollMessages = function() {
   if ($("#message").length > 0) {
    $("#message").scrollTop($("#message")[0].scrollHeight);
   }
+ }
+ 
+ function resetSelectedUser() {
+  selected_user = "";
+  $(document).find(".active_user").removeClass("active_user");
  }
 
  function loadContacts() {
@@ -126,7 +66,7 @@ $( document ).ready(function() {
 	checkInvitations();
 	scrollMessages();
   
-  function createMessage(author, name, surname, time, date, message) {
+  createMessage = function (author, name, surname, time, date, message) {
     return (author == "guest" || author == "sender")? 
                        `<div class="main-message">
                          <div class="message-user `+author+`">
@@ -204,12 +144,14 @@ $( document ).ready(function() {
 	});
 	
 	$(document).on("click touch", "#back-users", function () {
-		$("#messages").css("display", "none");
+		resetSelectedUser();
+    $("#messages").css("display", "none");
 		$("#users").css("display", "block");
 	});
 	
 	$(document).on("click touch", "#settings", function () {
-		if ($("#messages").css("display") == "none") {
+	 resetSelectedUser();
+   if ($("#messages").css("display") == "none") {
 			$("#users").css("display", "none");
 			$("#messages").css("display", "block");		
 		}
@@ -483,7 +425,8 @@ $( document ).ready(function() {
 	});
 	
 	$(document).on("click touch", "#add", function () {
-		if ($("#messages").css("display") == "none") {
+		resetSelectedUser();
+   if ($("#messages").css("display") == "none") {
 			$("#users").css("display", "none");
 			$("#messages").css("display", "block");		
 		}
@@ -722,13 +665,13 @@ $( document ).ready(function() {
   });
   
   $(document).on("click touch", ".user", function() {
-   var username = $(this).attr('username');
+   var username1 = $(this).attr('username');
    var element = $(this);
    $("#messages").empty();
    $.ajax({
 				type: 'POST',
 				data: {
-					username: username,
+					username: username1,
 				},
 				url: 'ajax/load-messages.php',
 				datatype: "json",
@@ -779,8 +722,13 @@ $( document ).ready(function() {
          $("#messages").append(messages);
          scrollMessages();
          element.removeClass('to_read');
-         $(document).find('.active_user').removeClass('active_user');
+         resetSelectedUser();
+         selected_user = username1;
          element.addClass('active_user');
+         if ($("#messages").css("display") == "none") {
+           $("#users").css("display", "none");
+           $("#messages").css("display", "block");		
+         }
         }
        }); 
   });
@@ -788,13 +736,13 @@ $( document ).ready(function() {
   $(document).on("submit", "#send-message", function(e) {
    e.preventDefault();
    var message = $("textarea[name='message']").val().trim();
-   var username = $('.btn-send').attr('username');
+   var username1 = $('.btn-send').attr('username');
    
    if (message != "") {
     $.ajax({
 				type: 'POST',
 				data: {
-					username: username,
+					username: username1,
           message: message
 				},
 				url: 'ajax/send-message.php',
@@ -804,6 +752,8 @@ $( document ).ready(function() {
          
          $("#message").append(createMessage("sender", data['name'], data['surname'], data['time'], data['date'], message));
          scrollMessages();
+         $("textarea[name='message']").val("");
+         send({type: 'message', toUsername: username1, name: data['name'], surname: data['surname'], username: username, time: data['time'], date: data['date'], message: message});
         }
    });
   }
