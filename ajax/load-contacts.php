@@ -1,14 +1,21 @@
 <?php
 	if (session_status() === PHP_SESSION_NONE){session_start();}
 	require_once("../database_connection.php");
-	
+    require_once '../vendor/autoload.php';
+    use \voku\helper\AntiXSS;
+
+    $antiXss = new AntiXSS();
+
 	$sql = "SELECT u.username, u.name, u.surname, u.avatar, u.active, 
           IF((SELECT COUNT(message) FROM messages WHERE to_username = :username AND from_username = u.username AND to_read = 1) > 0, 'to_read', '') as to_read
         FROM contacts as c
 				INNER JOIN users as u ON u.username = c.contact
 			WHERE c.username = :username";
-    $query = $conn->prepare($sql); 
-    $query->bindParam(':username', $_SESSION['username']);
+    $query = $conn->prepare($sql);
+
+    $username = $antiXss->xss_clean($_SESSION['username']);
+
+    $query->bindParam(':username', $username);
 	$query->execute();
 	$row_count = $query->rowCount();
 	

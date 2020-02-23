@@ -1,12 +1,20 @@
 <?php
 	if (session_status() === PHP_SESSION_NONE){session_start();}
 	require_once("../database_connection.php");
-	
+	require_once '../vendor/autoload.php';
+	use \voku\helper\AntiXSS;
+
+	$antiXss = new AntiXSS();
+
 	$sql = "DELETE FROM invitations WHERE username = :contact AND contact = :username";
-  $query = $conn->prepare($sql); 
-  $query->bindParam(':username', $_SESSION['username']);
-	$query->bindParam(':contact', $_POST['contact']);
-  $query->execute();
+  	$query = $conn->prepare($sql);
+
+  	$username = $antiXss->xss_clean($_SESSION['username']);
+  	$contact = $antiXss->xss_clean($_POST['contact']);
+
+  	$query->bindParam(':username', $username);
+	$query->bindParam(':contact', $contact);
+  	$query->execute();
 
 ?>
 

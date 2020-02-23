@@ -21,7 +21,7 @@ $( document ).ready(function() {
 		$.ajax({
 			type: 'POST',
 			url: 'ajax/load-contacts.php',
-			datatype: "json",
+			datatype: "text",
 			success: function (data) { 
 				data = JSON.parse(data);
 				$("#my-users").empty();	
@@ -96,7 +96,7 @@ $( document ).ready(function() {
 				},
 				url: 'ajax/search-contact.php',
 				datatype: "json",
-				success: function (data) { 
+				success: function (data) {
 					data = JSON.parse(data);
 					
 					$("#my-users").empty();	

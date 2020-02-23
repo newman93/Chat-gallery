@@ -1,12 +1,19 @@
 <?php
 	if (session_status() === PHP_SESSION_NONE){session_start();}
 	require_once("../database_connection.php");
-	
+    require_once '../vendor/autoload.php';
+    use \voku\helper\AntiXSS;
+
+    $antiXss = new AntiXSS();
+
 	$sql = "SELECT i.contact, u.name, u.surname, u.username, u.avatar  FROM invitations as i
 			INNER JOIN users as u ON u.username = i.username
 			WHERE i.contact = :username";
-    $query = $conn->prepare($sql); 
-    $query->bindParam(':username', $_SESSION['username']);
+    $query = $conn->prepare($sql);
+
+    $username = $antiXss->xss_clean($_SESSION['username']);
+
+    $query->bindParam(':username', $username);
 	$query->execute();
 	$row_count = $query->rowCount();
 	

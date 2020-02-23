@@ -2,7 +2,7 @@
     $db_config = array(
 'host' => 'localhost',
  'port' => '3306',
- 'user' => 'root',
+ 'user' => 'user',
  'pass' => '',
  'db' => 'chat-gallery',
  'db_type' => 'mysql',
@@ -19,8 +19,8 @@ try {
  ';dbname=' . $db_config['db'];
  
     $options = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION);
- 
-    $conn= new PDO($dsn, $db_config['user'],  $db_config['pass'], $options);
+
+    $conn= new PDO($dsn, $db_config['user'],  '', $options);
  
     define('DB_CONNECTED', true);
  

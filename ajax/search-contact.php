@@ -1,24 +1,37 @@
 <?php
 	if (session_status() === PHP_SESSION_NONE){session_start();}
 	require_once("../database_connection.php");
-	
+    require_once '../vendor/autoload.php';
+    use \voku\helper\AntiXSS;
+
+    $antiXss = new AntiXSS();
+
 	$user = explode(" ", $_POST['user']);
 	
 	if (count($user) > 1) {
 		$sql = "SELECT u.username, u.name, u.surname, u.avatar, u.active FROM users as u
 					INNER JOIN contacts as c ON c.username = :username AND c.contact = u.username
 				WHERE c.username = :username AND ((u.name = :name AND u.surname = :surname) OR (u.name = :surname AND u.surname = :name))";
-		$query = $conn->prepare($sql); 
-		$query->bindParam(':username', $_SESSION['username']);
-		$query->bindParam(':name', $user[0]);
-		$query->bindParam(':surname', $user[1]);
+		$query = $conn->prepare($sql);
+
+		$username = $antiXss->xss_clean($_SESSION['username']);
+        $name = $antiXss->xss_clean($user[0]);
+        $surname = $antiXss->xss_clean($user[1]);
+
+		$query->bindParam(':username', $usernme);
+		$query->bindParam(':name', $name);
+		$query->bindParam(':surname', $surname );
 	} else {
 		$sql = "SELECT u.username, u.name, u.surname, u.avatar, u.active FROM users as u
 					INNER JOIN contacts as c ON c.username = :username AND c.contact = u.username
 			WHERE c.username = :username AND (u.name = :name OR u.surname = :name)";
-		$query = $conn->prepare($sql); 
-		$query->bindParam(':username', $_SESSION['username']);
-		$query->bindParam(':name', $user[0]);
+		$query = $conn->prepare($sql);
+
+		$username = $antiXss->xss_clean($_SESSION['username']);
+        $name = $antiXss->xss_clean($user[0]);
+
+		$query->bindParam(':username', $username);
+		$query->bindParam(':name', $name);
 	}
 	
 	$query->execute();

@@ -1,11 +1,18 @@
 <?php 
 	if (session_status() === PHP_SESSION_NONE){session_start();}
 	require_once("../database_connection.php");
-	
+    require_once '../vendor/autoload.php';
+    use \voku\helper\AntiXSS;
+
+    $antiXss = new AntiXSS();
+
 	$sql = "SELECT name, surname, avatar FROM users
           WHERE username = :username";
   $query = $conn->prepare($sql);
-  $query->bindParam(':username', $_POST['username']);
+
+  $username = $antiXss->xss_clean($_POST['username']);
+
+  $query->bindParam(':username', $username);
   $query->execute();
   
   $row = $query->fetch();
@@ -21,9 +28,13 @@
         INNER JOIN users as to_u ON m.to_username = to_u.username
 			WHERE (m.from_username = :from AND m.to_username = :to) OR (m.from_username = :to AND m.to_username = :from)
       ORDER BY date ASC";
-  $query = $conn->prepare($sql); 
-  $query->bindParam(':from', $_SESSION['username']);
-  $query->bindParam(':to', $_POST['username']);
+  $query = $conn->prepare($sql);
+
+  $fromUsername = $antiXss->xss_clean($_SESSION['username']);
+  $toUsername = $antiXss->xss_clean($_POST['username']);
+
+  $query->bindParam(':from', $fromUsername);
+  $query->bindParam(':to', $toUsername);
 
 	$query->execute();
 	$row_count = $query->rowCount();
@@ -44,8 +55,12 @@
     
     $sql = "UPDATE messages SET to_read = 0 WHERE from_username = :from AND to_username = :to";
     $query = $conn->prepare($sql);
-    $query->bindParam(':from', $_POST['username']);
-    $query->bindParam(':to', $_SESSION['username']);
+
+    $fromUsername = $antiXss->xss_clean($_POST['username']);
+    $toUsername = $antiXss->xss_clean($_SESSION['username']);
+
+    $query->bindParam(':from', $fromUsername);
+    $query->bindParam(':to', $toUsername);
     $query->execute();
     
 		echo json_encode($data);

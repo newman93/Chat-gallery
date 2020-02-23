@@ -1,7 +1,8 @@
 {
     "require": {
         "cboden/ratchet": "^0.4.1",
-        "gumlet/php-image-resize": "1.9.*"
+        "gumlet/php-image-resize": "1.9.*",
+        "voku/anti-xss": "^4.1"
 
     }
 }
